@@ -142,6 +142,17 @@ class BimanualViperXEETask(base.Task):
         obs['mocap_pose_left'] = np.concatenate([physics.data.mocap_pos[0], physics.data.mocap_quat[0]]).copy()
         obs['mocap_pose_right'] = np.concatenate([physics.data.mocap_pos[1], physics.data.mocap_quat[1]]).copy()
 
+        ## depth
+        top_depth = physics.render(height=480, width=640, camera_id='top', depth=True)
+        obs['images']['top_depth'] = np.stack((top_depth, top_depth, top_depth), axis=-1)
+
+        angle_depth = physics.render(height=480, width=640, camera_id='angle', depth=True)
+        obs['images']['angle_depth'] = np.stack((angle_depth, angle_depth, angle_depth), axis=-1)
+
+        front_close_depth = physics.render(height=480, width=640, camera_id='front_close', depth=True)
+        obs['images']['front_close_depth'] = np.stack((front_close_depth, front_close_depth, front_close_depth), axis=-1)
+        ##
+
         # used when replaying joint trajectory
         obs['gripper_ctrl'] = physics.data.ctrl.copy()
         return obs
