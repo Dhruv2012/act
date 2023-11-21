@@ -135,23 +135,26 @@ class BimanualViperXEETask(base.Task):
         obs['qvel'] = self.get_qvel(physics)
         obs['env_state'] = self.get_env_state(physics)
         obs['images'] = dict()
+        '''
         obs['images']['top'] = physics.render(height=480, width=640, camera_id='top')
         obs['images']['angle'] = physics.render(height=480, width=640, camera_id='angle')
         obs['images']['vis'] = physics.render(height=480, width=640, camera_id='front_close')
+        '''
         # used in scripted policy to obtain starting pose
         obs['mocap_pose_left'] = np.concatenate([physics.data.mocap_pos[0], physics.data.mocap_quat[0]]).copy()
         obs['mocap_pose_right'] = np.concatenate([physics.data.mocap_pos[1], physics.data.mocap_quat[1]]).copy()
 
         ## depth
+        print("................DEPTH..............")
         top_depth = physics.render(height=480, width=640, camera_id='top', depth=True)
-        obs['images']['top_depth'] = np.stack((top_depth, top_depth, top_depth), axis=-1)
-
         angle_depth = physics.render(height=480, width=640, camera_id='angle', depth=True)
-        obs['images']['angle_depth'] = np.stack((angle_depth, angle_depth, angle_depth), axis=-1)
-
-        front_close_depth = physics.render(height=480, width=640, camera_id='front_close', depth=True)
-        obs['images']['front_close_depth'] = np.stack((front_close_depth, front_close_depth, front_close_depth), axis=-1)
-        ##
+        vis_depth = physics.render(height=480, width=640, camera_id='front_close', depth=True)
+        print("top_depth.shape", top_depth.shape)
+        print("angle_depth.shape", angle_depth.shape)
+        print("vis_depth.shape", vis_depth.shape)
+        obs['images']['top']  = np.stack((top_depth, top_depth, top_depth), axis=-1)
+        obs['images']['angle']  = np.stack((angle_depth, angle_depth, angle_depth), axis=-1)
+        obs['images']['vis']  = np.stack((vis_depth, vis_depth, vis_depth), axis=-1)
 
         # used when replaying joint trajectory
         obs['gripper_ctrl'] = physics.data.ctrl.copy()
